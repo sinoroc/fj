@@ -20,24 +20,42 @@ def parse_config(project_name: str, config_file: typing.TextIO) -> Config:
     raw_config = configparser.ConfigParser()
     raw_config.read_file(config_file)
     #
-    main_section_name = f'{project_name}:main'
-    #
-    requirements = [
-        line.strip()
-        for line in raw_config[main_section_name]['requirements'].splitlines()
-        if line.strip()
-    ]
+    zipapp_requirements = _get_zipapp_requirements(project_name, raw_config)
     #
     config = {
         'main': {
             'project_name': project_name,
         },
         'zipapp': {
-            'requirements': requirements,
+            'requirements': zipapp_requirements,
         },
     }
     #
     return config
+
+
+def _get_zipapp_requirements(
+        project_name: str,
+        raw_config: configparser.ConfigParser,
+) -> typing.List[str]:
+    #
+    default_requirement = f'{project_name}[full]'
+    #
+    zipapp_section_name = f'{project_name}:zipapp'
+    #
+    config_requirements = None
+    if raw_config.has_option(zipapp_section_name, 'requirements'):
+        raw_requirements = raw_config[zipapp_section_name]['requirements']
+        if raw_requirements:
+            config_requirements = [
+                line.strip()
+                for line in raw_requirements.splitlines()
+                if line.strip()
+            ]
+    #
+    zipapp_requirements = config_requirements or [default_requirement]
+    #
+    return zipapp_requirements
 
 
 def _get_windows_user_app_data_dir_path() -> pathlib.Path:

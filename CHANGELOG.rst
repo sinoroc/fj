@@ -5,6 +5,8 @@
 0.0.1.dev0
 ==========
 
+* Read zipapp requirements from 'fj:zipapp' section
+
 
 0.0.0
 =====
