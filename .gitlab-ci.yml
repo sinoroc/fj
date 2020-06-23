@@ -1,0 +1,16 @@
+---
+
+
+'.review':
+  script:
+    - 'export TOXENV="${CI_JOB_NAME##review}"'
+    - 'python3 -m pip install tox'
+    - 'python3 -m tox'
+    - 'python3 -m tox -e package'
+
+'review py38':
+  extends: '.review'
+  image: 'python:3.8'
+
+
+... EOF
