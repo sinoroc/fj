@@ -12,5 +12,9 @@
   extends: '.review'
   image: 'python:3.8'
 
+'review py39':
+  extends: '.review'
+  image: 'python:3.9-rc'
+
 
 ... EOF
