@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import logging
 import typing
 
 import packaging
@@ -12,6 +13,8 @@ from . import _links
 from . import _pip
 from . import _pool
 from . import _solver
+
+LOGGER = logging.getLogger(__name__)
 
 
 class CanNotInstallWithoutPath(Exception):
@@ -45,14 +48,14 @@ def _install_candidates(  # pylint: disable=too-complex
     for candidate in candidates_to_install:
         candidate_path = getattr(candidate, 'path', None)
         if candidate_path:
-            _pip.install_path(candidate_path)
+            _pip.install_path(registry, candidate_path)
         else:
             CanNotInstallWithoutPath(candidate)
     #
     for candidate in editable_candidates:
         candidate_path = getattr(candidate, 'source_path', None)
         if candidate_path:
-            _pip.install_path(candidate_path, editable=True)
+            _pip.install_path(registry, candidate_path, editable=True)
         else:
             CanNotInstallWithoutPath(candidate)
 

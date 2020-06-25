@@ -6,6 +6,7 @@
 ==========
 
 * Read zipapp requirements from 'fj:zipapp' section
+* Avoid context switch in 'virtualenv' plugin
 
 
 0.0.0

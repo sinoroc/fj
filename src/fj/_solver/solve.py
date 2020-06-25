@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import logging
 import typing
 
 import resolvelib
@@ -19,6 +20,8 @@ from . import _wheel
 
 if typing.TYPE_CHECKING:
     from . import base
+
+LOGGER = logging.getLogger(__name__)
 
 DIST_FILE_CANDIDATE_MAKERS = [
     _source.SourceDirectoryCandidateMaker(),
@@ -46,12 +49,19 @@ def _solve(
         pass
     #
     if resolution:
-        _display_resolution(resolution)
+        _display_resolution(requirements, resolution)
     #
     return resolution
 
 
-def _display_resolution(resolution: resolvelib.resolvers.Result) -> None:
+def _display_resolution(
+        requirements: typing.Iterable[base.Requirement],
+        resolution: resolvelib.resolvers.Result,
+) -> None:
+    print("--- Requirements ---")
+    for requirement in requirements:
+        print(f"{requirement}")
+    print()
     print("--- Pinned Candidates ---")
     for candidate in resolution.mapping.values():
         print(f"{candidate}")

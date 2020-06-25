@@ -4,12 +4,15 @@
 
 from __future__ import annotations
 
+import logging
 import sys
 import typing
 
 import importlib.metadata
 
 from . import base
+
+LOGGER = logging.getLogger(__name__)
 
 
 class _ActiveCandidate(base.BaseCandidate):
@@ -41,11 +44,11 @@ def _get_search_path(registry: base.Registry) -> typing.List[str]:
     In case we are running from a 'zipapp', the file itself is added to the top
     of the search path, so we want to exclude it from our search.
     """
-    environment_search_path = registry.environment.search_path
-    if sys.argv[0] == environment_search_path[0]:
-        search_path = environment_search_path[1:]
+    env_search_path = registry.environment.search_path
+    if sys.argv and env_search_path and sys.argv[0] == env_search_path[0]:
+        search_path = env_search_path[1:]
     else:
-        search_path = environment_search_path
+        search_path = env_search_path
     return search_path
 
 
