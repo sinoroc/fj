@@ -2,6 +2,18 @@
 
 
 .. Keep the current version number on line number 5
+0.0.1.post0
+===========
+
+2020-06-25
+
+Nothing new.
+
+The actual release '0.0.1' could not be fully distributed since there had been
+a file 'fj-0.0.1.tar.gz' previously uploaded to PyPI (2019-12-14) then deleted
+a few days later (2019-12-19).
+
+
 0.0.1
 =====
 
