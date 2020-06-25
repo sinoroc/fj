@@ -47,12 +47,14 @@ def _do_install(
 
 
 def install_path(
+        registry: _solver.base.Registry,
         path: pathlib.Path,
         editable: bool = False,
 ) -> None:
     """Install from local path."""
-    LOGGER.info("install_path(%s)", path)
-    _do_install(str(path), editable=editable)
+    LOGGER.info("install_path(%s, editable=%s)", path, editable)
+    purelib_dir_path = registry.environment.purelib_dir_path
+    _do_install(str(path), target_dir_path=purelib_dir_path, editable=editable)
 
 
 def install_requirement(

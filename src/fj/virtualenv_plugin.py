@@ -12,6 +12,7 @@ import packaging.version
 import virtualenv.seed.embed.base_embed
 
 from . import _config
+from . import _install
 from . import _meta
 from . import _solver
 from . import _subprocess
@@ -213,24 +214,26 @@ class FjVirtualenvSeeder(
             #
             project_name = _meta.PROJECT_NAME
             #
-            config_file_path = (
-                _config.get_default_config_file_path(project_name)
-            )
+            environment = _make_environment(creator)
             #
-            with config_file_path.open() as config_file:
-                config = _config.parse_config(project_name, config_file)
-            #
-            zipapp_path = _zipapp.get_or_build_zipapp_path(config)
-            #
-            command = [
-                str(creator.exe),
-                str(zipapp_path),
-                'install',
+            requirement_strs = [
+                self._requirement_str,
                 'pip',
                 'setuptools',
-                self._requirement_str,
+                'wheel',
             ]
-            _subprocess.call(command)
+            #
+            if self._is_context_switch_needed(environment):
+                _run_in_context(creator, project_name, requirement_strs)
+            else:
+                _run(environment, project_name, requirement_strs)
+
+    def _is_context_switch_needed(
+            self,
+            environment: _solver.base.Environment,
+    ) -> bool:
+        _dummy = (self, environment)
+        return False
 
     @classmethod
     def add_parser_arguments(
@@ -245,6 +248,41 @@ class FjVirtualenvSeeder(
             f'--{_meta.PROJECT_NAME}-requirement',
             default=f'{_meta.PROJECT_NAME}',
         )
+
+
+def _run(
+        environment: _solver.base.Environment,
+        project_name: str,
+        requirement_strs: typing.Iterable[str],
+) -> None:
+    build_registry = _solver.base.build_registry
+    with build_registry(project_name, environment) as registry:
+        requirements = _solver.parser.parse(registry, requirement_strs)
+        _install.install(registry, requirements, [], False)
+
+
+def _run_in_context(
+        creator: virtualenv.create.creator.Creator,
+        project_name: str,
+        requirement_strs: typing.List[str],
+) -> None:
+    #
+    config_file_path = (
+        _config.get_default_config_file_path(project_name)
+    )
+    #
+    with config_file_path.open() as config_file:
+        config = _config.parse_config(project_name, config_file)
+    #
+    zipapp_path = _zipapp.get_or_build_zipapp_path(config)
+    #
+    command = [
+        str(creator.exe),
+        str(zipapp_path),
+        'install',
+    ] + requirement_strs
+    #
+    _subprocess.call(command)
 
 
 # EOF
