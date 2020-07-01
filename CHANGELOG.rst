@@ -5,6 +5,8 @@
 0.0.2.dev0
 ===========
 
+* Use 'mousebender.simple' to find candidates on PEP 508 simple index
+
 
 0.0.1.post0
 ===========
