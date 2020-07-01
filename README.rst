@@ -7,6 +7,12 @@ Introduction
 Pool installations of Python projects
 
 
+Documentation
+-------------
+
+* https://fj.readthedocs.io/
+
+
 Repositories
 ------------
 

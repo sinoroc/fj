@@ -17,4 +17,4 @@
   image: 'python:3.9-rc'
 
 
-... EOF
+...  # EOF
