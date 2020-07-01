@@ -2,6 +2,14 @@
 
 
 .. Keep the current version number on line number 5
+0.0.2
+=====
+
+2020-07-01
+
+* Use 'mousebender.simple' to find candidates on PEP 508 simple index
+
+
 0.0.1.post0
 ===========
 

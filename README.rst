@@ -4,8 +4,11 @@
 Introduction
 ============
 
+Pool installations of Python projects
+
+
 Repositories
--------------
+------------
 
 Distributions:
 

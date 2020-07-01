@@ -166,7 +166,10 @@ def _build_args_parser(
         default_config_file_path: pathlib.Path,
 ) -> argparse.ArgumentParser:
     #
-    parser = argparse.ArgumentParser(allow_abbrev=False)
+    parser = argparse.ArgumentParser(
+        allow_abbrev=False,
+        description=_meta.SUMMARY,
+    )
     parser.add_argument(
         '--version',
         action='version',
