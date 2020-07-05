@@ -9,7 +9,7 @@ import setuptools
 
 def _get_version() -> str:
     file_name = 'CHANGELOG.rst'
-    line_number = 4
+    line_number = 5
     here_path = pathlib.Path(__file__).resolve().parent
     with here_path.joinpath(file_name).open() as file_:
         changelog = file_.read()
