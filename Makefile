@@ -9,7 +9,7 @@ tests_dir := ./test
 
 
 .PHONY: refresh
-refresh: clean develop review package
+refresh: clean develop review doc package
 
 
 .PHONY: develop
@@ -36,6 +36,11 @@ wheel:
 .PHONY: zapp
 zapp:
 	python3 setup.py bdist_zapp
+
+
+.PHONY: doc
+doc: develop
+	python3 -m sphinx.cmd.build doc build/doc
 
 
 .PHONY: format

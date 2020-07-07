@@ -4,5 +4,8 @@
 include CHANGELOG.rst
 include LICENSE.txt
 
+recursive-include doc *.py *.rst
+prune doc/_autosummary
+
 
 # EOF
