@@ -25,6 +25,7 @@ project = _PROJECT
 version = _VERSION
 
 extensions = [
+    'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinxcontrib.autoprogram',
@@ -69,6 +70,7 @@ html_use_index = False  # pylint: disable=invalid-name
 autodoc_default_options = {
     'members': True,
 }
+autodoc_typehints = 'none'  # pylint: disable=invalid-name
 
 # sphinx.ext.autosummary
 autosummary_generate = True  # pylint: disable=invalid-name
