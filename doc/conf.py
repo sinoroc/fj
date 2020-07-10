@@ -5,7 +5,6 @@
 
 import importlib.metadata
 
-
 _DISTRIBUTION_METADATA = importlib.metadata.metadata('fj')
 
 _AUTHOR = _DISTRIBUTION_METADATA['Author']
@@ -77,7 +76,7 @@ autosummary_generate = True  # pylint: disable=invalid-name
 
 # sphinx.ext.intersphinx
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/', None),
+    'python': ('https://docs.python.org/3/', None),
     'tox': ('https://tox.readthedocs.io/en/stable/', None),
     'virtualenv': ('https://virtualenv.pypa.io/en/stable/', None),
 }
