@@ -39,8 +39,8 @@ zapp:
 
 
 .PHONY: doc
-doc: develop
-	python3 -m sphinx.cmd.build doc build/doc
+doc:
+	python3 -m sphinx.cmd.build -n -W doc build/doc
 
 
 .PHONY: format
