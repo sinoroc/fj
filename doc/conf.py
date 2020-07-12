@@ -37,10 +37,6 @@ extensions = [
 
 master_doc = _MASTER_DOCUMENT  # pylint: disable=invalid-name
 
-templates_path = [
-    '_templates',
-]
-
 
 #
 # HTML
