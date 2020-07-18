@@ -18,7 +18,7 @@ _MASTER_DOCUMENT = 'contents'
 
 author = _AUTHOR
 project = _PROJECT
-version = _VERSION
+release = _VERSION
 
 extensions = []
 
