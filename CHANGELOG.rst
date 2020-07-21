@@ -3,8 +3,12 @@
 
 .. Keep the current version number on line number 6
 
-0.0.3.dev0
-==========
+0.0.3
+=====
+
+2020-07-21
+
+* Add documentation
 
 
 0.0.2
