@@ -8,6 +8,8 @@ import abc
 import dataclasses
 import email.parser
 import logging
+import subprocess
+import sys
 import typing
 import zipfile
 
@@ -30,9 +32,8 @@ LOGGER = logging.getLogger(__name__)
 
 class WheelCandidate(
         _distribution.DistFileCandidate,
-        metaclass=abc.ABCMeta,
 ):
-    """Abstract candidate for a 'wheel' distribution."""
+    """Candidate for a 'wheel' distribution."""
 
     def __init__(  # pylint: disable=too-many-arguments
             self,
@@ -122,29 +123,131 @@ class CanNotFindBuiltWheel(Exception):
     """Can not find the built wheel."""
 
 
+class WheelBuilder(
+        metaclass=abc.ABCMeta,
+):  # pylint: disable=too-few-public-methods
+    """Abstract wheel builder."""
+
+    @abc.abstractmethod
+    def build(
+            self,
+            environment: base.Environment,
+            source_dir_path: pathlib.Path,
+            target_dir_path: pathlib.Path,
+    ) -> typing.Optional[pathlib.Path]:
+        """Build wheel."""
+        raise NotImplementedError
+
+
+class Pep517WheelBuilder(
+        WheelBuilder,
+):  # pylint: disable=too-few-public-methods
+    """Wheel builder base on PEP517."""
+
+    def build(
+            self,
+            environment: base.Environment,
+            source_dir_path: pathlib.Path,
+            target_dir_path: pathlib.Path,
+    ) -> typing.Optional[pathlib.Path]:
+        """Implement."""
+        #
+        wheel_path = None
+        #
+        pyproject_toml_file_path = source_dir_path.joinpath('pyproject.toml')
+        #
+        if pyproject_toml_file_path.is_file():
+            #
+            try:
+                wheel_file_name = pep517.envbuild.build_wheel(
+                    str(source_dir_path),
+                    str(target_dir_path),
+                )
+            except Exception:
+                raise CanNotBuildWheel(source_dir_path)
+            else:
+                maybe_wheel_path = target_dir_path.joinpath(wheel_file_name)
+                if maybe_wheel_path.is_file():
+                    wheel_path = maybe_wheel_path
+                else:
+                    raise CanNotFindBuiltWheel(wheel_path)
+        #
+        return wheel_path
+
+
+class PipWheelBuilder(
+        WheelBuilder,
+):  # pylint: disable=too-few-public-methods
+    """Wheel builder base on PEP517."""
+
+    def build(
+            self,
+            environment: base.Environment,
+            source_dir_path: pathlib.Path,
+            target_dir_path: pathlib.Path,
+    ) -> typing.Optional[pathlib.Path]:
+        """Implement."""
+        #
+        wheel_path = None
+        #
+        setup_py_file_path = source_dir_path.joinpath('setup.py')
+        #
+        if setup_py_file_path.is_file():
+            _do_pip_wheel(source_dir_path, target_dir_path)
+            for item in target_dir_path.glob('*.whl'):
+                if item.is_file():
+                    wheel_path = item
+        #
+        return wheel_path
+
+
+def _do_pip_wheel(
+        source_dir_path: pathlib.Path,
+        target_dir_path: pathlib.Path,
+) -> None:
+    command = [
+        sys.executable,
+        '-m',
+        'pip',
+        'wheel',
+        '--no-deps',
+        '--wheel-dir',
+        str(target_dir_path),
+        str(source_dir_path),
+    ]
+    subprocess.check_call(command)
+
+
 def build_wheel(
+        environment: base.Environment,
         source_dir_path: pathlib.Path,
         target_dir_path: pathlib.Path,
 ) -> pathlib.Path:
-    """Build a wheel distribution file."""
     #
-    wheel_path = None
+    """Build a wheel distribution file."""
     #
     LOGGER.info("Building wheel for '%s'...", source_dir_path)
     #
-    try:
-        wheel_file_name = pep517.envbuild.build_wheel(
-            str(source_dir_path),
-            str(target_dir_path),
+    wheel_path = None
+    #
+    wheel_builders = [
+        Pep517WheelBuilder(),
+        PipWheelBuilder(),
+    ]
+    #
+    for wheel_builder in wheel_builders:
+        wheel_path = wheel_builder.build(
+            environment,
+            source_dir_path,
+            target_dir_path,
         )
-    except Exception:
-        raise CanNotBuildWheel(source_dir_path)
+        if wheel_path:
+            break
+    #
+    if wheel_path:
+        LOGGER.info("Built wheel '%s'.", wheel_path)
     else:
-        wheel_path = target_dir_path.joinpath(wheel_file_name)
-        if wheel_path.is_file():
-            LOGGER.info("Built wheel '%s'.", wheel_path)
-        else:
-            raise CanNotFindBuiltWheel(wheel_path)
+        raise CanNotBuildWheel(source_dir_path)
     #
     return wheel_path
 
