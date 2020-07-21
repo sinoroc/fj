@@ -1,0 +1,19 @@
+---
+
+
+version: 2
+
+sphinx:
+  configuration: 'doc/conf.py'
+
+python:
+  version: '3.8'
+  install:
+    - method: 'pip'
+      path: '.'
+      extra_requirements:
+        - 'full'
+        - 'dev_doc'
+
+
+...  # EOF
