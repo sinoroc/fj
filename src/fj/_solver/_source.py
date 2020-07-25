@@ -86,7 +86,11 @@ class SourceDirectoryCandidate(
                     wheel_path = item
                     break
         else:
-            wheel_path = _wheel.build_wheel(self.source_path, wheel_dir_path)
+            wheel_path = _wheel.build_wheel(
+                self._registry.environment,
+                self.source_path,
+                wheel_dir_path,
+            )
         #
         return wheel_path
 
@@ -139,7 +143,11 @@ class SourceDirectoryCandidateMaker(
                 registry.get_temp_dir_path().joinpath(WHEEL_DIR_NAME)
             )
             target_dir_path.mkdir()
-            wheel_path = _wheel.build_wheel(uri_path, target_dir_path)
+            wheel_path = _wheel.build_wheel(
+                registry.environment,
+                uri_path,
+                target_dir_path,
+            )
             metadata = _wheel.get_metadata(wheel_path)
             if metadata:
                 parser_result = cls.ParserResult(

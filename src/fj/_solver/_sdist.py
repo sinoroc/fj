@@ -71,6 +71,7 @@ class SdistCandidate(
             )
         #
         wheel_path = _wheel.build_wheel(
+            self._registry.environment,
             source_dir_path,
             target_dir_path,
         )
