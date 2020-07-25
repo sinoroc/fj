@@ -104,7 +104,7 @@ def get_metadata(wheel_path: pathlib.Path) -> typing.Optional[base.Metadata]:
     #
     with zipfile.ZipFile(wheel_path) as zip_file:
         for file_name in zip_file.namelist():
-            if file_name.endswith(".dist-info/METADATA"):
+            if file_name.endswith('.dist-info/METADATA'):
                 email_parser = email.parser.BytesParser()
                 metadata = email_parser.parse(
                     zip_file.open(file_name),  # type: ignore[arg-type]
