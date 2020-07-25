@@ -6,6 +6,8 @@
 0.0.4.dev0
 ==========
 
+* Add pip-based wheel builder
+
 
 0.0.3
 =====
