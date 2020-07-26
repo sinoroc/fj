@@ -9,10 +9,13 @@ import typing
 
 import packaging
 
-from . import _links
-from . import _pip
-from . import _pool
-from . import _solver
+from . import installers
+from . import links
+from . import pool
+from . import solve
+
+if typing.TYPE_CHECKING:
+    from . import base
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,9 +25,9 @@ class CanNotInstallWithoutPath(Exception):
 
 
 def _install_candidates(  # pylint: disable=too-complex
-        registry: _solver.base.Registry,
-        candidates: typing.Iterable[_solver.base.Candidate],
-        editable_candidates: typing.Iterable[_solver.base.Candidate],
+        registry: base.Registry,
+        candidates: typing.Iterable[base.Candidate],
+        editable_candidates: typing.Iterable[base.Candidate],
 ) -> None:
     #
     candidates_to_install = []
@@ -40,22 +43,26 @@ def _install_candidates(  # pylint: disable=too-complex
                 candidates_to_pool.append(candidate)
     #
     if candidates_to_pool:
-        _pool.add_candidates(registry, candidates_to_pool)
+        pool.add_candidates(registry, candidates_to_pool)
     #
     if candidates_to_link:
-        _links.add_candidates(registry, candidates_to_link)
+        links.add_candidates(registry, candidates_to_link)
     #
     for candidate in candidates_to_install:
         candidate_path = getattr(candidate, 'path', None)
         if candidate_path:
-            _pip.install_path(registry, candidate_path)
+            installers.install_path(registry, candidate_path)
         else:
             CanNotInstallWithoutPath(candidate)
     #
     for candidate in editable_candidates:
         candidate_path = getattr(candidate, 'source_path', None)
         if candidate_path:
-            _pip.install_path(registry, candidate_path, editable=True)
+            installers.install_path(
+                registry,
+                candidate_path,
+                editable=True,
+            )
         else:
             CanNotInstallWithoutPath(candidate)
 
@@ -65,9 +72,9 @@ class CanNotInstallIndirectRequirementAsEditable(Exception):
 
 
 def install(
-        registry: _solver.base.Registry,
-        requirements: typing.Iterable[_solver.base.Requirement],
-        editable_requirements: typing.Iterable[_solver.base.Requirement],
+        registry: base.Registry,
+        requirements: typing.Iterable[base.Requirement],
+        editable_requirements: typing.Iterable[base.Requirement],
         skip_dependencies: bool,
 ) -> None:
     """Install requirements."""
@@ -81,14 +88,14 @@ def install(
     #
     all_requirements = list(requirements) + list(editable_requirements)
     #
-    resolution = _solver.solve.solve_for_environment(
+    resolution = solve.solve_for_environment(
         registry,
         all_requirements,
         skip_dependencies,
     )
     #
     if resolution is None:
-        resolution = _solver.solve.solve(
+        resolution = solve.solve(
             registry,
             all_requirements,
             skip_dependencies,

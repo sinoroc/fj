@@ -12,8 +12,7 @@ import urllib
 
 import packaging
 
-from . import base
-from . import _wheel
+from .. import lib
 
 LOGGER = logging.getLogger(__name__)
 
@@ -21,17 +20,17 @@ WHEEL_DIR_NAME = 'built_from_source'
 
 
 class SourceDirectoryCandidate(
-        base.BaseCandidate,
+        lib.base.BaseCandidate,
 ):
     """Candidate for a source directory."""
 
     def __init__(  # pylint: disable=too-many-arguments
             self,
-            registry: base.Registry,
+            registry: lib.base.Registry,
             uri_str: str,
-            project_key: base.ProjectKey,
-            release_version: base.Version,
-            extras: base.Extras,
+            project_key: lib.base.ProjectKey,
+            release_version: lib.base.Version,
+            extras: lib.base.Extras,
             is_direct: bool,
     ) -> None:
         """Initialize."""
@@ -66,8 +65,8 @@ class SourceDirectoryCandidate(
             self._source_path = self._get_source_path()
         return self._source_path
 
-    def _get_metadata(self) -> typing.Optional[base.Metadata]:
-        metadata_ = _wheel.get_metadata(self.path)
+    def _get_metadata(self) -> typing.Optional[lib.base.Metadata]:
+        metadata_ = lib.wheel.get_metadata(self.path)
         return metadata_
 
     def _get_path(self) -> pathlib.Path:
@@ -76,7 +75,9 @@ class SourceDirectoryCandidate(
             self._registry.get_temp_dir_path().joinpath(WHEEL_DIR_NAME)
         )
         for item in wheel_dir_path.iterdir():
-            project_key, release_version, tags = _wheel.parse_file_path(item)
+            project_key, release_version, tags = (
+                lib.wheel.parse_file_path(item)
+            )
             if project_key and release_version and tags:
                 if (
                         project_key == self.project_key
@@ -86,7 +87,7 @@ class SourceDirectoryCandidate(
                     wheel_path = item
                     break
         else:
-            wheel_path = _wheel.build_wheel(
+            wheel_path = lib.wheel.build_wheel(
                 self._registry.environment,
                 self.source_path,
                 wheel_dir_path,
@@ -103,17 +104,17 @@ class SourceDirectoryCandidate(
 
 
 class SourceDirectoryCandidateMaker(
-        base.CandidateMaker,
+        lib.base.CandidateMaker,
 ):
     """Candidate maker for a source directory."""
 
     @classmethod
     def _make(  # pylint: disable=too-many-arguments
             cls,
-            registry: base.Registry,
+            registry: lib.base.Registry,
             uri_str: str,
-            parser_result: base.CandidateMaker.ParserResult,
-            extras: base.Extras,
+            parser_result: lib.base.CandidateMaker.ParserResult,
+            extras: lib.base.Extras,
             is_direct: bool,
     ) -> SourceDirectoryCandidate:
         #
@@ -131,9 +132,9 @@ class SourceDirectoryCandidateMaker(
     @functools.lru_cache(maxsize=None)
     def _parse_uri_path(
             cls,
-            registry: base.Registry,
+            registry: lib.base.Registry,
             uri_path: pathlib.Path,
-    ) -> typing.Optional[base.CandidateMaker.ParserResult]:
+    ) -> typing.Optional[lib.base.CandidateMaker.ParserResult]:
         """Parse a URI."""
         #
         parser_result = None
@@ -143,12 +144,12 @@ class SourceDirectoryCandidateMaker(
                 registry.get_temp_dir_path().joinpath(WHEEL_DIR_NAME)
             )
             target_dir_path.mkdir()
-            wheel_path = _wheel.build_wheel(
+            wheel_path = lib.wheel.build_wheel(
                 registry.environment,
                 uri_path,
                 target_dir_path,
             )
-            metadata = _wheel.get_metadata(wheel_path)
+            metadata = lib.wheel.get_metadata(wheel_path)
             if metadata:
                 parser_result = cls.ParserResult(
                     packaging.utils.canonicalize_name(metadata['Name']),

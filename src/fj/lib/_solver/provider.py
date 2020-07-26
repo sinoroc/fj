@@ -11,7 +11,7 @@ import packaging.utils
 import resolvelib
 
 if typing.TYPE_CHECKING:
-    from . import base
+    from .. import base
 
 
 class Provider(resolvelib.providers.AbstractProvider):  # type: ignore[misc]

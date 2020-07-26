@@ -9,25 +9,12 @@ import typing
 
 import resolvelib
 
-from . import _active
-from . import _direct
-from . import _pep503
-from . import _pool
-from . import _provider
-from . import _sdist
-from . import _source
-from . import _wheel
+from . import _solver
 
 if typing.TYPE_CHECKING:
     from . import base
 
 LOGGER = logging.getLogger(__name__)
-
-DIST_FILE_CANDIDATE_MAKERS = [
-    _source.SourceDirectoryCandidateMaker(),
-    _sdist.SdistCandidateMaker(),
-    _wheel.WheelCandidateMaker(),
-]
 
 
 def _solve(
@@ -39,7 +26,7 @@ def _solve(
     #
     resolution = None
     #
-    provider = _provider.Provider(registry, finders, skip_depencencies)
+    provider = _solver.provider.Provider(registry, finders, skip_depencencies)
     reporter = resolvelib.BaseReporter()
     solver = resolvelib.Resolver(provider, reporter)
     #
@@ -79,8 +66,8 @@ def solve_for_pool(
 ) -> resolvelib.resolvers.Result:
     """Solve dependency for the requirements."""
     finders = [
-        _pool.PoolCandidateFinder(registry),
-        _pep503.SimpleIndexFinder(registry, DIST_FILE_CANDIDATE_MAKERS),
+        _solver.pool.PoolCandidateFinder(registry),
+        _solver.pep503.SimpleIndexFinder(registry),
     ]
     resolution = _solve(registry, finders, requirements, skip_depencencies)
     return resolution
@@ -93,13 +80,9 @@ def solve_for_environment(
 ) -> resolvelib.resolvers.Result:
     """Solve dependency for the requirements."""
     finders = [
-        _direct.DirectCandidateFinder(
-            registry,
-            requirements,
-            DIST_FILE_CANDIDATE_MAKERS,
-        ),
-        _active.ActiveFinder(registry),
-        _pool.PoolCandidateFinder(registry),
+        _solver.direct.DirectCandidateFinder(registry, requirements),
+        _solver.active.ActiveFinder(registry),
+        _solver.pool.PoolCandidateFinder(registry),
     ]
     resolution = _solve(registry, finders, requirements, skip_depencencies)
     return resolution
@@ -112,14 +95,10 @@ def solve(
 ) -> resolvelib.resolvers.Result:
     """Solve dependency for the requirements."""
     finders = [
-        _direct.DirectCandidateFinder(
-            registry,
-            requirements,
-            DIST_FILE_CANDIDATE_MAKERS,
-        ),
-        _active.ActiveFinder(registry),
-        _pool.PoolCandidateFinder(registry),
-        _pep503.SimpleIndexFinder(registry, DIST_FILE_CANDIDATE_MAKERS),
+        _solver.direct.DirectCandidateFinder(registry, requirements),
+        _solver.active.ActiveFinder(registry),
+        _solver.pool.PoolCandidateFinder(registry),
+        _solver.pep503.SimpleIndexFinder(registry),
     ]
     resolution = _solve(registry, finders, requirements, skip_depencencies)
     return resolution

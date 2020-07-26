@@ -22,14 +22,10 @@ class TestParseDistributionExtras(unittest.TestCase):
     def test_parse_distribution_path(self) -> None:
         """Parse distribution path."""
         candidate_makers = [
-            # pylint: disable=protected-access
-            fj._solver._sdist.SdistCandidateMaker(),
-            fj._solver._wheel.WheelCandidateMaker(),
+            fj.ext.sdist.SdistCandidateMaker(),
+            fj.lib.wheel.WheelCandidateMaker(),
         ]
-        parser = (
-            # pylint: disable=protected-access
-            fj._solver.parser.DirectUriRequirementParser(candidate_makers)
-        )
+        parser = fj.lib.parser.DirectUriRequirementParser(candidate_makers)
         parse_uri_and_extras = (
             # pylint: disable=protected-access
             parser._parse_uri_and_extras

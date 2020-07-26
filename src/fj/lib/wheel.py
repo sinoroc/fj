@@ -17,7 +17,7 @@ import packaging
 import pep517.envbuild
 
 from . import base
-from . import _distribution
+from . import distribution
 
 if typing.TYPE_CHECKING:
     import pathlib
@@ -31,7 +31,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class WheelCandidate(
-        _distribution.DistFileCandidate,
+        distribution.DistFileCandidate,
 ):
     """Candidate for a 'wheel' distribution."""
 
@@ -142,7 +142,7 @@ class WheelBuilder(
 class Pep517WheelBuilder(
         WheelBuilder,
 ):  # pylint: disable=too-few-public-methods
-    """Wheel builder base on PEP517."""
+    """Wheel builder based on PEP517."""
 
     def build(
             self,
@@ -178,7 +178,7 @@ class Pep517WheelBuilder(
 class PipWheelBuilder(
         WheelBuilder,
 ):  # pylint: disable=too-few-public-methods
-    """Wheel builder base on PEP517."""
+    """Wheel builder based on 'pip'."""
 
     def build(
             self,

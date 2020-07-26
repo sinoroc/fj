@@ -10,7 +10,7 @@ import typing
 
 import importlib.metadata
 
-from . import base
+from .. import base
 
 LOGGER = logging.getLogger(__name__)
 

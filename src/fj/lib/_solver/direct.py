@@ -8,7 +8,7 @@ import typing
 
 import packaging
 
-from . import base
+from .. import base
 
 
 class MultipleDirectUriRequirements(Exception):
@@ -24,14 +24,12 @@ class DirectCandidateFinder(  # pylint: disable=too-few-public-methods
             self,
             registry: base.Registry,
             requirements: typing.Iterable[base.Requirement],
-            candidate_makers: typing.Iterable[base.CandidateMaker],
     ) -> None:
         """Initialize."""
         #
         super().__init__()
         #
         self._registry = registry
-        self._candidate_makers = candidate_makers
         #
         self._direct_requirements = _find_direct_requirements(requirements)
 
@@ -47,7 +45,7 @@ class DirectCandidateFinder(  # pylint: disable=too-few-public-methods
         #
         if project_key in self._direct_requirements:
             direct_requirement = self._direct_requirements[project_key]
-            for candidate_maker in self._candidate_makers:
+            for candidate_maker in self._registry.direct_uri_candidate_makers:
                 candidate = candidate_maker.make_from_direct_requirement(
                     self._registry,
                     direct_requirement,
