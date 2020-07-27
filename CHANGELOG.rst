@@ -3,8 +3,10 @@
 
 .. Keep the current version number on line number 6
 
-0.0.4.dev0
-==========
+0.0.4
+=====
+
+2020-07-27
 
 * Add pip-based wheel builder
 
