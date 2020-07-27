@@ -5,10 +5,10 @@
 from __future__ import annotations
 
 import logging
-import subprocess
 import sys
 import typing
 
+from . import _subprocess
 from . import _venv
 
 if typing.TYPE_CHECKING:
@@ -43,7 +43,7 @@ def _do_install(
         command.append('--editable')
     command.append(requirement_str)
     LOGGER.info("_do_install %s", command)
-    subprocess.check_call(command)
+    _subprocess.call(command)
 
 
 def install_path(
