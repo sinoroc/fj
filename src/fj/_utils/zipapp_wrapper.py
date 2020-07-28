@@ -10,43 +10,46 @@ import tempfile
 import typing
 import zipapp
 
-from . import _config
-from . import _subprocess
-from . import _venv
+from . import config
+from . import venv_wrapper
+from . import subprocess_wrapper
 
 LOGGER = logging.getLogger(__name__)
 
 
-def get_or_build_zipapp_path(config: _config.Config) -> pathlib.Path:
+def get_or_build_zipapp_path(configuration: config.Config) -> pathlib.Path:
     """Get or build zipapp."""
     #
-    zipapp_path = _get_zipapp_path(config)
+    zipapp_path = _get_zipapp_path(configuration)
     #
     if not zipapp_path.is_file():
         LOGGER.info("Building zipapp...")
-        _build_zipapp(config, zipapp_path)
+        _build_zipapp(configuration, zipapp_path)
     #
     return zipapp_path
 
 
-def _get_zipapp_path(config: _config.Config) -> pathlib.Path:
-    project_name = config['main']['project_name']
-    user_data_dir_path = _config.get_user_data_dir_path(project_name)
+def _get_zipapp_path(configuration: config.Config) -> pathlib.Path:
+    project_name = configuration['main']['project_name']
+    user_data_dir_path = config.get_user_data_dir_path(project_name)
     zipapp_path = user_data_dir_path.joinpath('zipapp', f'{project_name}.pyz')
     return zipapp_path
 
 
-def _build_zipapp(config: _config.Config, zipapp_path: pathlib.Path) -> None:
+def _build_zipapp(
+        configuration: config.Config,
+        zipapp_path: pathlib.Path,
+) -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_dir_path = pathlib.Path(temp_dir)
         #
         venv_dir_path = temp_dir_path.joinpath('venv')
         LOGGER.info("Creating virtual environment to build zipapp...")
-        venv_context = _venv.create_venv(venv_dir_path)
+        venv_context = venv_wrapper.create_venv(venv_dir_path)
         if venv_context:
             LOGGER.info("Virtual environment creation done.")
             #
-            requirement_str_list = config['zipapp']['requirements']
+            requirement_str_list = configuration['zipapp']['requirements']
             #
             install_dir_path = temp_dir_path.joinpath('zipapp')
             LOGGER.info("Installing zipapp requirements...")
@@ -86,7 +89,7 @@ def _do_pip_install(
     ]
     #
     LOGGER.info("Calling pip subprocess...")
-    _subprocess.call(command)
+    subprocess_wrapper.call(command)
     LOGGER.info("Calling pip subprocess done.")
 
 

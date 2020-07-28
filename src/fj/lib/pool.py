@@ -10,8 +10,9 @@ import typing
 
 import packaging
 
-from . import _pip
-from . import _solver
+from . import base
+from . import installers
+from . import solve
 
 LOGGER = logging.getLogger(__name__)
 
@@ -21,8 +22,8 @@ class CanNotAddToPool(Exception):
 
 
 def _get_pooled_projects(
-        registry: _solver.base.Registry,
-) -> typing.List[_solver.base.Requirement]:
+        registry: base.Registry,
+) -> typing.List[base.Requirement]:
     #
     pooled_projects = []
     pool_dir_path = registry.get_pool_dir_path()
@@ -40,22 +41,26 @@ def _get_pooled_projects(
 
 
 def _add_pooled_projects(
-        registry: _solver.base.Registry,
-        requirements: typing.Iterable[_solver.base.Requirement],
+        registry: base.Registry,
+        requirements: typing.Iterable[base.Requirement],
 ) -> None:
     for requirement in requirements:
         target_dir_path = (
             registry.get_requirement_dir_path(requirement)
         )
         if target_dir_path:
-            _pip.install_requirement(registry, requirement, target_dir_path)
+            installers.install_requirement(
+                registry,
+                requirement,
+                target_dir_path,
+            )
         else:
             raise CanNotAddToPool(requirement)
 
 
 def add_candidates(
-        registry: _solver.base.Registry,
-        candidates: typing.Iterable[_solver.base.Candidate],
+        registry: base.Registry,
+        candidates: typing.Iterable[base.Candidate],
 ) -> None:
     """Add candidates to pool."""
     requirements = []
@@ -76,12 +81,12 @@ def add_candidates(
 
 
 def add(
-        registry: _solver.base.Registry,
-        requirements: typing.Iterable[_solver.base.Requirement],
+        registry: base.Registry,
+        requirements: typing.Iterable[base.Requirement],
 ) -> None:
     """Add requirements to pool."""
     LOGGER.info("add_(%s)", requirements)
-    resolution = _solver.solve.solve_for_pool(registry, requirements, False)
+    resolution = solve.solve_for_pool(registry, requirements, False)
     if resolution:
         candidates = resolution.mapping.values()
         add_candidates(registry, candidates)
@@ -90,8 +95,8 @@ def add(
 
 
 def list_(
-        registry: _solver.base.Registry,
-) -> typing.List[_solver.base.Requirement]:
+        registry: base.Registry,
+) -> typing.List[base.Requirement]:
     """List projects in the pool."""
     pooled_projects = _get_pooled_projects(registry)
     LOGGER.info("list_ %s", pooled_projects)
@@ -99,8 +104,8 @@ def list_(
 
 
 def remove(
-        registry: _solver.base.Registry,
-        requirements: typing.Iterable[_solver.base.Requirement],
+        registry: base.Registry,
+        requirements: typing.Iterable[base.Requirement],
 ) -> None:
     """Remove requirements from pool."""
     for requirement in requirements:

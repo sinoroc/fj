@@ -15,9 +15,7 @@ import zipfile
 import packaging.utils
 import packaging.version
 
-from . import base
-from . import _distribution
-from . import _wheel
+from .. import lib
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,12 +23,12 @@ WHEEL_DIR_PATH = 'built_from_sdist'
 
 
 class SdistCandidate(
-        _distribution.DistFileCandidate,
+        lib.distribution.DistFileCandidate,
         metaclass=abc.ABCMeta,
 ):
     """Abstract candidate for a 'sdist' source distribution file."""
 
-    def _get_metadata(self) -> typing.Optional[base.Metadata]:
+    def _get_metadata(self) -> typing.Optional[lib.base.Metadata]:
         #
         metadata_ = None
         #
@@ -49,7 +47,7 @@ class SdistCandidate(
                     source_dir_path = item
                     wheel_path = self._build_wheel(source_dir_path)
                     if wheel_path:
-                        metadata_ = _wheel.get_metadata(wheel_path)
+                        metadata_ = lib.wheel.get_metadata(wheel_path)
                     break
         #
         return metadata_
@@ -70,7 +68,7 @@ class SdistCandidate(
                 self._registry.get_temp_dir_path().joinpath(WHEEL_DIR_PATH)
             )
         #
-        wheel_path = _wheel.build_wheel(
+        wheel_path = lib.wheel.build_wheel(
             self._registry.environment,
             source_dir_path,
             target_dir_path,
@@ -79,16 +77,16 @@ class SdistCandidate(
         return wheel_path
 
 
-class SdistCandidateMaker(base.CandidateMaker):
+class SdistCandidateMaker(lib.base.CandidateMaker):
     """Make candidates for 'sdist' source distribution files."""
 
     @classmethod
     def _make(  # pylint: disable=too-many-arguments
             cls,
-            registry: base.Registry,
+            registry: lib.base.Registry,
             uri_str: str,
-            parser_result: base.CandidateMaker.ParserResult,
-            extras: base.Extras,
+            parser_result: lib.base.CandidateMaker.ParserResult,
+            extras: lib.base.Extras,
             is_direct: bool,
     ) -> SdistCandidate:
         #
@@ -106,9 +104,9 @@ class SdistCandidateMaker(base.CandidateMaker):
     @classmethod
     def _parse_uri_path(
             cls,
-            registry: base.Registry,
+            registry: lib.base.Registry,
             uri_path: pathlib.Path,
-    ) -> typing.Optional[base.CandidateMaker.ParserResult]:
+    ) -> typing.Optional[lib.base.CandidateMaker.ParserResult]:
         #
         parser_result = None
         #

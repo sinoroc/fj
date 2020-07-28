@@ -58,6 +58,9 @@ class Registry:
         self._application_name = application_name
         self._environment = environment
         self._temp_dir_path = temp_dir_path
+        #
+        self.direct_uri_candidate_makers: typing.Iterable[CandidateMaker] = {}
+        self.installers: typing.Iterable[Installer] = {}
 
     @property
     def environment(self) -> Environment:
@@ -465,6 +468,30 @@ class CandidateMaker(
             uri_path: pathlib.Path
     ) -> typing.Optional[ParserResult]:
         """Parse URI path."""
+        raise NotImplementedError
+
+
+class Installer(metaclass=abc.ABCMeta):
+    """Abstract installer."""
+
+    @abc.abstractmethod
+    def install_path(
+            self,
+            registry: Registry,
+            path: pathlib.Path,
+            editable: bool = False,
+    ) -> bool:
+        """Install from local path."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def install_requirement(
+            self,
+            registry: Registry,
+            requirement: Requirement,
+            target_dir_path: pathlib.Path,
+    ) -> bool:
+        """Install locked requirement."""
         raise NotImplementedError
 
 

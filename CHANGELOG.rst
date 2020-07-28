@@ -6,6 +6,7 @@
 0.0.5.dev0
 ==========
 
+* Refactor, reorganize code, improve public API
 
 0.0.4
 =====

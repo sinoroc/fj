@@ -1,10 +1,10 @@
 #
 
-"""Module main entry point."""
+"""Fj main entry point."""
 
-from . import cli
+from . import _cli
 
 if __name__ == '__main__':
-    cli.main()
+    _cli.main.main()
 
 # EOF

@@ -13,20 +13,10 @@ import urllib
 
 import packaging
 
-from . import _sdist
-from . import _source
-from . import _wheel
-
 if typing.TYPE_CHECKING:
     from . import base
 
 LOGGER = logging.getLogger(__name__)
-
-DIRECT_URI_CANDIDATE_MAKERS = {
-    _source.SourceDirectoryCandidateMaker(),
-    _sdist.SdistCandidateMaker(),
-    _wheel.WheelCandidateMaker(),
-}
 
 
 class CanNotParseRequirement(Exception):
@@ -201,7 +191,7 @@ def parse(
     #
     requirement_parsers = [
         Pep508RequirementParser(),
-        DirectUriRequirementParser(DIRECT_URI_CANDIDATE_MAKERS),
+        DirectUriRequirementParser(registry.direct_uri_candidate_makers),
     ]
     #
     for requirement_str in requirement_strs:

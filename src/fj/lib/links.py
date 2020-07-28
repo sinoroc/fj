@@ -10,7 +10,8 @@ import typing
 
 import packaging
 
-from . import _solver
+from . import base
+from . import solve
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ class CanNotLinkDirectCandidate(Exception):
 
 
 def _get_path_config_file_path(
-        registry: _solver.base.Registry,
+        registry: base.Registry,
 ) -> pathlib.Path:
     #
     path_config_file_path = (
@@ -32,8 +33,8 @@ def _get_path_config_file_path(
 
 
 def _read_linked_requirements(
-        registry: _solver.base.Registry,
-) -> typing.List[_solver.base.Requirement]:
+        registry: base.Registry,
+) -> typing.List[base.Requirement]:
     #
     linked_requirements = []
     path_config_file_path = _get_path_config_file_path(registry)
@@ -51,8 +52,8 @@ def _read_linked_requirements(
 
 
 def _write_links(
-        registry: _solver.base.Registry,
-        requirements: typing.Sequence[_solver.base.Requirement],
+        registry: base.Registry,
+        requirements: typing.Sequence[base.Requirement],
 ) -> None:
     #
     path_config_file_path = _get_path_config_file_path(registry)
@@ -68,16 +69,16 @@ def _write_links(
 
 
 def list_(
-        registry: _solver.base.Registry,
-) -> typing.List[_solver.base.Requirement]:
+        registry: base.Registry,
+) -> typing.List[base.Requirement]:
     """List links."""
     linked_requirements = _read_linked_requirements(registry)
     return linked_requirements
 
 
 def _add(
-        linked_requirements: typing.MutableSequence[_solver.base.Requirement],
-        requirement: _solver.base.Requirement,
+        linked_requirements: typing.MutableSequence[base.Requirement],
+        requirement: base.Requirement,
 ) -> None:
     already_linked = False
     requirement_key = packaging.utils.canonicalize_name(requirement.name)
@@ -93,8 +94,8 @@ def _add(
 
 
 def _add_linked_requirements(
-        registry: _solver.base.Registry,
-        requirements: typing.Sequence[_solver.base.Requirement],
+        registry: base.Registry,
+        requirements: typing.Sequence[base.Requirement],
 ) -> None:
     linked_requirements = _read_linked_requirements(registry)
     for requirement in requirements:
@@ -103,8 +104,8 @@ def _add_linked_requirements(
 
 
 def add_candidates(
-        registry: _solver.base.Registry,
-        candidates: typing.Iterable[_solver.base.Candidate],
+        registry: base.Registry,
+        candidates: typing.Iterable[base.Candidate],
 ) -> None:
     """Add candidates as links."""
     requirements = []
@@ -123,12 +124,12 @@ def add_candidates(
 
 
 def add(
-        registry: _solver.base.Registry,
-        requirements: typing.Sequence[_solver.base.Requirement],
+        registry: base.Registry,
+        requirements: typing.Sequence[base.Requirement],
 ) -> None:
     """Add links to requirements."""
     LOGGER.info("add %s", requirements)
-    resolution = _solver.solve.solve_for_environment(
+    resolution = solve.solve_for_environment(
         registry,
         requirements,
         False,
@@ -149,8 +150,8 @@ def add(
 
 
 def _remove(
-        requirements: typing.List[_solver.base.Requirement],
-        requirement: _solver.base.Requirement,
+        requirements: typing.List[base.Requirement],
+        requirement: base.Requirement,
 ) -> None:
     requirement_key = packaging.utils.canonicalize_name(requirement.name)
     for linked_requirement in requirements:
@@ -163,8 +164,8 @@ def _remove(
 
 
 def remove(
-        registry: _solver.base.Registry,
-        requirements: typing.List[_solver.base.Requirement],
+        registry: base.Registry,
+        requirements: typing.List[base.Requirement],
 ) -> None:
     """Remove links to requirements."""
     LOGGER.info("remove %s", requirements)

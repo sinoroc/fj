@@ -9,7 +9,7 @@ import typing
 import importlib.metadata
 import packaging
 
-from . import base
+from .. import base
 
 if typing.TYPE_CHECKING:
     import pathlib

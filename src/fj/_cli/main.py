@@ -1,6 +1,6 @@
 #
 
-"""Command line interface."""
+"""Fj command line interface main."""
 
 from __future__ import annotations
 
@@ -11,9 +11,10 @@ import pathlib
 import sys
 import typing
 
-from . import _config
-from . import _context
-from . import _meta
+from .. import _meta
+from .. import _utils
+
+from . import _bootstrap
 
 try:
     from . import _core
@@ -285,7 +286,7 @@ def main() -> None:
     project_name = _meta.PROJECT_NAME
     #
     default_config_file_path = (
-        _config.get_default_config_file_path(project_name)
+        _utils.config.get_default_config_file_path(project_name)
     )
     #
     args_parser = _build_args_parser(default_config_file_path)
@@ -293,9 +294,9 @@ def main() -> None:
     LOGGER.info("Arguments: %s", vars(args))
     #
     if hasattr(args, '_handler'):
-        if _context.is_switch_needed(args):
+        if _bootstrap.context.is_switch_needed(args):
             LOGGER.info("Command needs to be executed in a different context.")
-            _context.switch(project_name, args)
+            _bootstrap.context.switch(project_name, args)
         else:
             args._handler(args)  # pylint: disable=protected-access
     else:

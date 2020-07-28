@@ -11,12 +11,10 @@ import packaging.tags
 import packaging.version
 import virtualenv.seed.embed.base_embed
 
-from . import _config
-from . import _install
-from . import _meta
-from . import _solver
-from . import _subprocess
-from . import _zipapp
+from .. import ext
+from .. import lib
+from .. import _utils
+from .. import _meta
 
 if typing.TYPE_CHECKING:
     import argparse
@@ -35,7 +33,7 @@ class UnknownPythonPlatform(Exception):
 
 def _get_interpreter_str(
         python_implementation_str: str,
-        python_version: packaging.version.Version,
+        python_version: lib.base.Version,
 ) -> str:
     long_name = python_implementation_str.lower()
     short_name = packaging.tags.INTERPRETER_SHORT_NAMES[long_name]
@@ -97,7 +95,7 @@ def _get_tags(
         python_implementation_str: str,
         python_version: packaging.version.Version,
         creator: virtualenv.create.creator.Creator,
-) -> _solver.base.Tags:
+) -> lib.base.Tags:
     """Get the tags.
 
     This is a best effort guess, hopefully it's good enough for the seeds.
@@ -140,7 +138,7 @@ def _get_tags(
     )
     tag_list.extend(compatible_tags)
     #
-    tags: _solver.base.Tags = frozenset(tag_list)
+    tags: lib.base.Tags = frozenset(tag_list)
     #
     return tags
 
@@ -157,7 +155,7 @@ def _get_purelib_dir_path(
 
 def _make_environment(
         creator: virtualenv.create.creator.Creator,
-) -> _solver.base.Environment:
+) -> lib.base.Environment:
     #
     purelib_dir_path = _get_purelib_dir_path(creator)
     #
@@ -181,7 +179,7 @@ def _make_environment(
         creator,
     )
     #
-    environment = _solver.base.Environment(
+    environment = lib.base.Environment(
         purelib_dir_path,
         python_implementation_str,
         python_processor_str,
@@ -230,7 +228,7 @@ class FjVirtualenvSeeder(
 
     def _is_context_switch_needed(
             self,
-            environment: _solver.base.Environment,
+            environment: lib.base.Environment,
     ) -> bool:
         _dummy = (self, environment)
         return False
@@ -251,14 +249,18 @@ class FjVirtualenvSeeder(
 
 
 def _run(
-        environment: _solver.base.Environment,
+        environment: lib.base.Environment,
         project_name: str,
         requirement_strs: typing.Iterable[str],
 ) -> None:
-    build_registry = _solver.base.build_registry
-    with build_registry(project_name, environment) as registry:
-        requirements = _solver.parser.parse(registry, requirement_strs)
-        _install.install(registry, requirements, [], False)
+    with lib.base.build_registry(project_name, environment) as registry:
+        registry.direct_uri_candidate_makers = {
+            ext.source.SourceDirectoryCandidateMaker(),
+            ext.sdist.SdistCandidateMaker(),
+            lib.wheel.WheelCandidateMaker(),
+        }
+        requirements = lib.parser.parse(registry, requirement_strs)
+        lib.install.install(registry, requirements, [], False)
 
 
 def _run_in_context(
@@ -268,13 +270,13 @@ def _run_in_context(
 ) -> None:
     #
     config_file_path = (
-        _config.get_default_config_file_path(project_name)
+        _utils.config.get_default_config_file_path(project_name)
     )
     #
     with config_file_path.open() as config_file:
-        config = _config.parse_config(project_name, config_file)
+        config = _utils.config.parse_config(project_name, config_file)
     #
-    zipapp_path = _zipapp.get_or_build_zipapp_path(config)
+    zipapp_path = _utils.zipapp_wrapper.get_or_build_zipapp_path(config)
     #
     command = [
         str(creator.exe),
@@ -282,7 +284,7 @@ def _run_in_context(
         'install',
     ] + requirement_strs
     #
-    _subprocess.call(command)
+    _utils.subprocess_wrapper.call(command)
 
 
 # EOF

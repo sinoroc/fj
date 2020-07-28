@@ -9,10 +9,10 @@ import typing
 if typing.TYPE_CHECKING:
     import pathlib
     #
-    from . import _solver
+    from . import base
 
 
-def list_(registry: _solver.base.Registry) -> typing.List[pathlib.Path]:
+def list_(registry: base.Registry) -> typing.List[pathlib.Path]:
     """List cached distributions."""
     #
     cached_distributions = []

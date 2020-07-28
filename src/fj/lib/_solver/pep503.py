@@ -10,7 +10,7 @@ import typing
 import mousebender.simple
 import requests
 
-from . import base
+from .. import base
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,12 +25,10 @@ class SimpleIndexFinder(
     def __init__(
             self,
             registry: base.Registry,
-            candidate_makers: typing.Iterable[base.CandidateMaker],
             base_url: typing.Optional[str] = None,
     ) -> None:
         """Initialize."""
         self._registry = registry
-        self._candidate_makers = candidate_makers
         self._base_url = base_url if base_url else self.PYPI_BASE_URL
 
     def find_candidates(  # pylint: disable=too-complex
@@ -107,7 +105,7 @@ class SimpleIndexFinder(
         #
         candidate = None
         #
-        for candidate_maker in self._candidate_makers:
+        for candidate_maker in self._registry.direct_uri_candidate_makers:
             candidate = candidate_maker.make_from_uri(
                 self._registry,
                 distribution_url,
