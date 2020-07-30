@@ -81,4 +81,30 @@ class PipInstaller(lib.base.Installer):
         return is_installed
 
 
+class PipWheelBuilder(
+        lib.base.WheelBuilder,
+):  # pylint: disable=too-few-public-methods
+    """Wheel builder based on 'pip'."""
+
+    def build(
+            self,
+            registry: lib.base.Registry,
+            source_dir_path: pathlib.Path,
+            target_dir_path: pathlib.Path,
+    ) -> typing.Optional[pathlib.Path]:
+        """Implement."""
+        #
+        wheel_path = None
+        #
+        setup_py_file_path = source_dir_path.joinpath('setup.py')
+        #
+        if setup_py_file_path.is_file():
+            _utils.pip_wrapper.wheel(source_dir_path, target_dir_path)
+            for item in target_dir_path.glob('*.whl'):
+                if item.is_file():
+                    wheel_path = item
+        #
+        return wheel_path
+
+
 # EOF

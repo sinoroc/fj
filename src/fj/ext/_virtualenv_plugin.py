@@ -254,11 +254,22 @@ def _run(
         requirement_strs: typing.Iterable[str],
 ) -> None:
     with lib.base.build_registry(project_name, environment) as registry:
-        registry.direct_uri_candidate_makers = {
+        #
+        registry.direct_uri_candidate_makers = [
             ext.source.SourceDirectoryCandidateMaker(),
             ext.sdist.SdistCandidateMaker(),
             lib.wheel.WheelCandidateMaker(),
-        }
+        ]
+        #
+        registry.installers = [
+            ext.pip.PipInstaller(),
+        ]
+        #
+        registry.wheel_builders = [
+            lib.wheel.Pep517WheelBuilder(),
+            ext.pip.PipWheelBuilder(),
+        ]
+        #
         requirements = lib.parser.parse(registry, requirement_strs)
         lib.install.install(registry, requirements, [], False)
 

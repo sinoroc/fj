@@ -88,7 +88,7 @@ class SourceDirectoryCandidate(
                     break
         else:
             wheel_path = lib.wheel.build_wheel(
-                self._registry.environment,
+                self._registry,
                 self.source_path,
                 wheel_dir_path,
             )
@@ -145,7 +145,7 @@ class SourceDirectoryCandidateMaker(
             )
             target_dir_path.mkdir()
             wheel_path = lib.wheel.build_wheel(
-                registry.environment,
+                registry,
                 uri_path,
                 target_dir_path,
             )
