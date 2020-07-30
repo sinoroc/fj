@@ -4,12 +4,9 @@
 
 from __future__ import annotations
 
-import abc
 import dataclasses
 import email.parser
 import logging
-import subprocess
-import sys
 import typing
 import zipfile
 
@@ -123,30 +120,14 @@ class CanNotFindBuiltWheel(Exception):
     """Can not find the built wheel."""
 
 
-class WheelBuilder(
-        metaclass=abc.ABCMeta,
-):  # pylint: disable=too-few-public-methods
-    """Abstract wheel builder."""
-
-    @abc.abstractmethod
-    def build(
-            self,
-            environment: base.Environment,
-            source_dir_path: pathlib.Path,
-            target_dir_path: pathlib.Path,
-    ) -> typing.Optional[pathlib.Path]:
-        """Build wheel."""
-        raise NotImplementedError
-
-
 class Pep517WheelBuilder(
-        WheelBuilder,
+        base.WheelBuilder,
 ):  # pylint: disable=too-few-public-methods
     """Wheel builder based on PEP517."""
 
     def build(
             self,
-            environment: base.Environment,
+            registry: base.Registry,
             source_dir_path: pathlib.Path,
             target_dir_path: pathlib.Path,
     ) -> typing.Optional[pathlib.Path]:
@@ -175,51 +156,8 @@ class Pep517WheelBuilder(
         return wheel_path
 
 
-class PipWheelBuilder(
-        WheelBuilder,
-):  # pylint: disable=too-few-public-methods
-    """Wheel builder based on 'pip'."""
-
-    def build(
-            self,
-            environment: base.Environment,
-            source_dir_path: pathlib.Path,
-            target_dir_path: pathlib.Path,
-    ) -> typing.Optional[pathlib.Path]:
-        """Implement."""
-        #
-        wheel_path = None
-        #
-        setup_py_file_path = source_dir_path.joinpath('setup.py')
-        #
-        if setup_py_file_path.is_file():
-            _do_pip_wheel(source_dir_path, target_dir_path)
-            for item in target_dir_path.glob('*.whl'):
-                if item.is_file():
-                    wheel_path = item
-        #
-        return wheel_path
-
-
-def _do_pip_wheel(
-        source_dir_path: pathlib.Path,
-        target_dir_path: pathlib.Path,
-) -> None:
-    command = [
-        sys.executable,
-        '-m',
-        'pip',
-        'wheel',
-        '--no-deps',
-        '--wheel-dir',
-        str(target_dir_path),
-        str(source_dir_path),
-    ]
-    subprocess.check_call(command)
-
-
 def build_wheel(
-        environment: base.Environment,
+        registry: base.Registry,
         source_dir_path: pathlib.Path,
         target_dir_path: pathlib.Path,
 ) -> pathlib.Path:
@@ -230,14 +168,9 @@ def build_wheel(
     #
     wheel_path = None
     #
-    wheel_builders = [
-        Pep517WheelBuilder(),
-        PipWheelBuilder(),
-    ]
-    #
-    for wheel_builder in wheel_builders:
+    for wheel_builder in registry.wheel_builders:
         wheel_path = wheel_builder.build(
-            environment,
+            registry,
             source_dir_path,
             target_dir_path,
         )

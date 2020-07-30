@@ -59,8 +59,9 @@ class Registry:
         self._environment = environment
         self._temp_dir_path = temp_dir_path
         #
-        self.direct_uri_candidate_makers: typing.Iterable[CandidateMaker] = {}
-        self.installers: typing.Iterable[Installer] = {}
+        self.direct_uri_candidate_makers: typing.List[CandidateMaker] = []
+        self.installers: typing.List[Installer] = []
+        self.wheel_builders: typing.List[WheelBuilder] = []
 
     @property
     def environment(self) -> Environment:
@@ -492,6 +493,22 @@ class Installer(metaclass=abc.ABCMeta):
             target_dir_path: pathlib.Path,
     ) -> bool:
         """Install locked requirement."""
+        raise NotImplementedError
+
+
+class WheelBuilder(
+        metaclass=abc.ABCMeta,
+):  # pylint: disable=too-few-public-methods
+    """Abstract wheel builder."""
+
+    @abc.abstractmethod
+    def build(
+            self,
+            registry: Registry,
+            source_dir_path: pathlib.Path,
+            target_dir_path: pathlib.Path,
+    ) -> typing.Optional[pathlib.Path]:
+        """Build wheel."""
         raise NotImplementedError
 
 

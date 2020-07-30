@@ -12,15 +12,20 @@ from .. import lib
 from .. import _meta
 from .. import _utils
 
-DIRECT_URI_CANDIDATE_MAKERS = {
+DIRECT_URI_CANDIDATE_MAKERS = [
     ext.source.SourceDirectoryCandidateMaker(),
     ext.sdist.SdistCandidateMaker(),
     lib.wheel.WheelCandidateMaker(),
-}
+]
 
-INSTALLERS = {
+INSTALLERS: typing.List[lib.base.Installer] = [
     ext.pip.PipInstaller(),
-}
+]
+
+WHEEL_BUILDERS = [
+    lib.wheel.Pep517WheelBuilder(),
+    ext.pip.PipWheelBuilder(),
+]
 
 
 def cache_list() -> typing.List[pathlib.Path]:
@@ -38,6 +43,7 @@ def install(
     with lib.base.build_registry(_meta.PROJECT_NAME) as registry:
         registry.direct_uri_candidate_makers = DIRECT_URI_CANDIDATE_MAKERS
         registry.installers = INSTALLERS
+        registry.wheel_builders = WHEEL_BUILDERS
         requirements = lib.parser.parse(registry, requirements_strs)
         lib.install.install(registry, requirements, [], skip_dependencies)
 
@@ -73,6 +79,7 @@ def pip_install(
     with lib.base.build_registry(_meta.PROJECT_NAME) as registry:
         registry.direct_uri_candidate_makers = DIRECT_URI_CANDIDATE_MAKERS
         registry.installers = INSTALLERS
+        registry.wheel_builders = WHEEL_BUILDERS
         requirements = lib.parser.parse(registry, requirements_strs)
         editable_requirements = (
             lib.parser.parse(registry, editable_requirement_strs)
@@ -90,6 +97,7 @@ def pool_add(requirements_strs: typing.Iterable[str]) -> None:
     with lib.base.build_registry(_meta.PROJECT_NAME) as registry:
         registry.direct_uri_candidate_makers = DIRECT_URI_CANDIDATE_MAKERS
         registry.installers = INSTALLERS
+        registry.wheel_builders = WHEEL_BUILDERS
         requirements = lib.parser.parse(registry, requirements_strs)
         lib.pool.add(registry, requirements)
 
@@ -112,6 +120,7 @@ def solve(requirements_strs: typing.Iterable[str]) -> None:
     """Resolve requirements."""
     with lib.base.build_registry(_meta.PROJECT_NAME) as registry:
         registry.direct_uri_candidate_makers = DIRECT_URI_CANDIDATE_MAKERS
+        registry.wheel_builders = WHEEL_BUILDERS
         requirements = lib.parser.parse(registry, requirements_strs)
         lib.solve.solve(registry, requirements, False)
 

@@ -44,7 +44,26 @@ def install(
     if editable:
         command.append('--editable')
     command.append(requirement_str)
-    LOGGER.info("_do_install %s", command)
+    LOGGER.info("install %s", command)
+    subprocess_wrapper.call(command)
+
+
+def wheel(
+        source_dir_path: pathlib.Path,
+        target_dir_path: pathlib.Path,
+) -> None:
+    """Build a wheel with 'pip' in a subprocess."""
+    command = [
+        sys.executable,
+        '-m',
+        'pip',
+        'wheel',
+        '--no-deps',
+        '--wheel-dir',
+        str(target_dir_path),
+        str(source_dir_path),
+    ]
+    LOGGER.info("wheel %s", command)
     subprocess_wrapper.call(command)
 
 
