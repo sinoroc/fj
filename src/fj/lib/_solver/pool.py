@@ -61,7 +61,10 @@ class PoolCandidateFinder(
 
     def __init__(self, registry: base.Registry) -> None:
         """Initialize."""
+        self._registry = registry
+        #
         self._pool_distributions = []
+        #
         pool_dir_path = registry.get_pool_dir_path()
         if pool_dir_path and pool_dir_path.is_dir():
             for item in pool_dir_path.iterdir():
@@ -85,7 +88,12 @@ class PoolCandidateFinder(
             )
             if distribution_key == project_key:
                 candidate = _PoolCandidate(distribution, extras)
-                yield candidate
+                is_compatible = candidate.is_compatible(
+                    requirements,
+                    self._registry.environment,
+                )
+                if is_compatible:
+                    yield candidate
 
 
 # EOF
