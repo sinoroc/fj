@@ -55,7 +55,7 @@ class SimpleIndexFinder(
             if candidate:
                 is_compatible = candidate.is_compatible(
                     requirements,
-                    self._registry.environment
+                    self._registry.environment,
                 )
                 if is_compatible:
                     release = candidates.setdefault(
