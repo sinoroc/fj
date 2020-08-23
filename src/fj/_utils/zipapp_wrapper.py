@@ -67,7 +67,7 @@ def _build_zipapp(
             zipapp.create_archive(
                 install_dir_path,
                 interpreter='/usr/bin/env python3',
-                main='fj.cli:main',
+                main='fj._cli.main:main',
                 target=zipapp_path,
             )
 
