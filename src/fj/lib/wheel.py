@@ -144,8 +144,8 @@ class Pep517WheelBuilder(
                     str(source_dir_path),
                     str(target_dir_path),
                 )
-            except Exception:
-                raise CanNotBuildWheel(source_dir_path)
+            except Exception as exc:
+                raise CanNotBuildWheel(source_dir_path) from exc
             else:
                 maybe_wheel_path = target_dir_path.joinpath(wheel_file_name)
                 if maybe_wheel_path.is_file():
