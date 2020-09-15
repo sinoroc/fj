@@ -15,7 +15,7 @@ from . import solve
 
 LOGGER = logging.getLogger(__name__)
 
-PATH_CONFIG_FILE_NAME = 'fj.pth'
+PATH_CONFIG_FILE_NAME = 'fj-links.pth'
 
 
 class CanNotLinkDirectCandidate(Exception):
