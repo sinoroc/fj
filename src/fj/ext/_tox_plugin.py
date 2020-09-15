@@ -16,7 +16,7 @@ if typing.TYPE_CHECKING:
 def tox_addoption(parser: tox.config.Parser) -> None:
     """Set hook."""
     #
-    parser.argparser.add_argument(
+    parser.add_argument(
         '--fj',
         action='store_true',
     )
