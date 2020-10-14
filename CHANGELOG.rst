@@ -6,6 +6,8 @@
 0.0.5.dev0
 ==========
 
+* Rewrite the handling of the pool
+  * Sort installations by wheel compatibility tags
 * Refactor, reorganize code, improve public API
 
 0.0.4
@@ -39,9 +41,7 @@
 
 Nothing new.
 
-The actual release '0.0.1' could not be fully distributed since there had been
-a file 'fj-0.0.1.tar.gz' previously uploaded to PyPI (2019-12-14) then deleted
-a few days later (2019-12-19).
+The actual release '0.0.1' could not be fully distributed since there had been a file 'fj-0.0.1.tar.gz' previously uploaded to PyPI (2019-12-14) then deleted a few days later (2019-12-19).
 
 
 0.0.1
