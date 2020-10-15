@@ -23,7 +23,8 @@ class PipInstaller(lib.base.Installer):
             self,
             registry: lib.base.Registry,
             path: pathlib.Path,
-            editable: bool = False,
+            target_dir_path: typing.Optional[pathlib.Path],
+            editable: bool,
     ) -> bool:
         """Install from local path."""
         #
@@ -31,10 +32,9 @@ class PipInstaller(lib.base.Installer):
         #
         is_installed = False
         #
-        purelib_dir_path = registry.environment.purelib_dir_path
         _utils.pip_wrapper.install(
             str(path),
-            target_dir_path=purelib_dir_path,
+            target_dir_path=target_dir_path,
             editable=editable,
         )
         #
@@ -72,8 +72,8 @@ class PipInstaller(lib.base.Installer):
             #
             _utils.pip_wrapper.install(
                 requirement_str,
-                target_dir_path,
-                venv_context,
+                target_dir_path=target_dir_path,
+                venv_context=venv_context,
             )
             #
             is_installed = True
