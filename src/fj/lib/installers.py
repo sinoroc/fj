@@ -18,14 +18,26 @@ if typing.TYPE_CHECKING:
 def install_path(
         registry: base.Registry,
         path: pathlib.Path,
+        target_dir_path: typing.Optional[pathlib.Path] = None,
         editable: bool = False,
 ) -> bool:
     """Install from local path."""
+    #
     is_installed = False
+    #
+    if target_dir_path is None:
+        target_dir_path = registry.environment.purelib_dir_path
+    #
     for installer in registry.installers:
-        is_installed = installer.install_path(registry, path, editable)
+        is_installed = installer.install_path(
+            registry,
+            path,
+            target_dir_path,
+            editable,
+        )
         if is_installed:
             break
+    #
     return is_installed
 
 

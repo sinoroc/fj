@@ -480,7 +480,8 @@ class Installer(metaclass=abc.ABCMeta):
             self,
             registry: Registry,
             path: pathlib.Path,
-            editable: bool = False,
+            target_dir_path: typing.Optional[pathlib.Path],
+            editable: bool,
     ) -> bool:
         """Install from local path."""
         raise NotImplementedError
