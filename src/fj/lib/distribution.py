@@ -43,6 +43,7 @@ class DistFileCandidate(
         self._is_direct = is_direct
         #
         self._path: typing.Optional[pathlib.Path] = None
+        self._path_built: typing.Optional[pathlib.Path] = None
 
     @property
     def is_direct(self) -> bool:
@@ -51,10 +52,26 @@ class DistFileCandidate(
 
     @property
     def path(self) -> pathlib.Path:
-        """Implement abstract."""
+        """Path to distribution file."""
         if self._path is None:
             self._path = self._get_path()
         return self._path
+
+    @property
+    def path_built(self) -> pathlib.Path:
+        """Path to built distribution file.
+
+        Could be the same path if the candidate is already a built
+        distribution.
+        """
+        if self._path_built is None:
+            self._path_built = self._get_path_built()
+        return self._path_built
+
+    @abc.abstractmethod
+    def _get_path_built(self) -> pathlib.Path:
+        """Get the path to built distribution file."""
+        raise NotImplementedError
 
     def _get_path(self) -> pathlib.Path:
         #

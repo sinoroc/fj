@@ -79,6 +79,10 @@ class WheelCandidate(
         #
         return compatible
 
+    def _get_path_built(self) -> pathlib.Path:
+        """Implement."""
+        return self.path
+
     def _is_tags_compatible(
             self,
             environment: base.Environment,

@@ -30,7 +30,19 @@ class SdistCandidate(
 
     def _get_metadata(self) -> typing.Optional[lib.base.Metadata]:
         #
-        metadata_ = None
+        metadata_ = lib.wheel.get_metadata(self.path_built)
+        #
+        return metadata_
+
+    def _get_path_built(self) -> pathlib.Path:
+        #
+        wheel_path = self._extract_and_build()
+        #
+        return wheel_path
+
+    def _extract_and_build(self) -> pathlib.Path:
+        #
+        wheel_path = None
         #
         with tempfile.TemporaryDirectory() as extraction_dir_path:
             LOGGER.info("Extracting %s to %s", self.path, extraction_dir_path)
@@ -46,11 +58,12 @@ class SdistCandidate(
                 if item.is_dir():
                     source_dir_path = item
                     wheel_path = self._build_wheel(source_dir_path)
-                    if wheel_path:
-                        metadata_ = lib.wheel.get_metadata(wheel_path)
                     break
         #
-        return metadata_
+        if wheel_path is None:
+            raise Exception
+        #
+        return wheel_path
 
     def _build_wheel(
             self,
