@@ -85,7 +85,7 @@ class Registry:
 
     def get_pool_dir_path(self) -> pathlib.Path:
         """Get path to the directory for the pool."""
-        pool_dir_path = self.get_interpreter_dir_path().joinpath('pool')
+        pool_dir_path = self._get_user_data_dir_path().joinpath('pool')
         return pool_dir_path
 
     def get_requirement_dir_path(
@@ -94,30 +94,13 @@ class Registry:
     ) -> typing.Optional[pathlib.Path]:
         """Get path to the directory containing the requirement."""
         requirement_dir_path = None
-        version = _get_locked_requirement_version(requirement)
-        if version:
+        version_str = get_pinned_requirement_version_str(requirement)
+        if version_str:
             pool_dir_path = self.get_pool_dir_path()
             requirement_dir_path = pool_dir_path.joinpath(
-                '{}-{}'.format(requirement.name, version),
+                '{}-{}'.format(requirement.name, version_str),
             )
         return requirement_dir_path
-
-    def get_requirement_for_dir_path(
-            self,
-            requirement_dir_path: pathlib.Path,
-    ) -> typing.Optional[Requirement]:
-        """Get requirement corresponding to this directory."""
-        requirement = None
-        pool_dir_path = self.get_pool_dir_path()
-        try:
-            relative_path = requirement_dir_path.relative_to(pool_dir_path)
-        except ValueError:
-            pass
-        else:
-            project_key, version_string = str(relative_path).rsplit('-', 1)
-            requirement_str = f'{project_key}=={version_string}'
-            requirement = packaging.requirements.Requirement(requirement_str)
-        return requirement
 
     def get_temp_dir_path(self) -> pathlib.Path:
         """Get path to temporary directory."""
@@ -528,9 +511,10 @@ def _get_interpreter_key(environment: Environment) -> str:
     return interpreter_key
 
 
-def _get_locked_requirement_version(
+def get_pinned_requirement_version_str(
         requirement: Requirement,
 ) -> typing.Optional[str]:
+    """Get version string for a pinned requirement."""
     #
     version = None
     #

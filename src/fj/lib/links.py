@@ -11,6 +11,7 @@ import typing
 import packaging
 
 from . import base
+from . import pool
 from . import solve
 
 LOGGER = logging.getLogger(__name__)
@@ -37,13 +38,15 @@ def _read_linked_requirements(
 ) -> typing.List[base.Requirement]:
     #
     linked_requirements = []
+    #
     path_config_file_path = _get_path_config_file_path(registry)
+    #
     if path_config_file_path.exists() and path_config_file_path.is_file():
         with path_config_file_path.open('rt') as path_config_file:
             for line in path_config_file.readlines():
                 link_path = pathlib.Path(line.strip())
                 linked_requirement = (
-                    registry.get_requirement_for_dir_path(link_path)
+                    pool.get_requirement_at_dir_path(link_path)
                 )
                 if linked_requirement:
                     linked_requirements.append(linked_requirement)
@@ -57,13 +60,21 @@ def _write_links(
 ) -> None:
     #
     path_config_file_path = _get_path_config_file_path(registry)
-    links_str = '\n'.join(
-        [
-            str(registry.get_requirement_dir_path(requirement))
-            for requirement
-            in requirements
-        ],
-    )
+    #
+    link_strs = []
+    for requirement in requirements:
+        req_version_str = base.get_pinned_requirement_version_str(requirement)
+        if req_version_str:
+            req_version = packaging.version.Version(req_version_str)
+            dir_path = pool.get_pooled_project_dir_path(
+                registry,
+                requirement.name,
+                req_version,
+            )
+            link_strs.append(str(dir_path))
+    #
+    links_str = '\n'.join(link_strs)
+    #
     LOGGER.info("_write_links(%s) to %s", requirements, path_config_file_path)
     path_config_file_path.write_text(links_str)
 

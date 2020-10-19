@@ -38,17 +38,54 @@ class _PoolCandidate(base.BaseCandidate):
         return metadata_
 
 
-def _find_distribution(
+def find_distributions(
+        registry: base.Registry,
+) -> typing.List[importlib.metadata.Distribution]:
+    """Get distributions from pool."""
+    #
+    pool_distributions = []
+    #
+    pool_dir_path = registry.get_pool_dir_path()
+    #
+    if pool_dir_path.is_dir():
+        for tag_dir_path in pool_dir_path.iterdir():
+            tags_str = tag_dir_path.name
+            tags = packaging.tags.parse_tag(tags_str)
+            for tag in tags:
+                if tag_dir_path.is_dir() and tag in registry.environment.tags:
+                    tag_distributions = _find_distributions_in_tag_dir(
+                        tag_dir_path,
+                    )
+                    pool_distributions.extend(tag_distributions)
+    #
+    return pool_distributions
+
+
+def _find_distributions_in_tag_dir(
+        tag_dir_path: pathlib.Path,
+) -> typing.List[importlib.metadata.Distribution]:
+    #
+    distributions = []
+    #
+    for path in tag_dir_path.iterdir():
+        if path.is_dir():
+            distribution = find_distribution(path)
+            if distribution:
+                distributions.append(distribution)
+    #
+    return distributions
+
+
+def find_distribution(
         dir_path: pathlib.Path,
 ) -> typing.Optional[importlib.metadata.Distribution]:
+    """Get distribution in the directory."""
     #
     distribution = None
     #
-    dist_info_path = None
-    for item in dir_path.glob('*.*-info'):
+    for item in dir_path.glob('*.dist-info'):
         if item.is_dir():
-            dist_info_path = item
-            distribution = importlib.metadata.Distribution.at(dist_info_path)
+            distribution = importlib.metadata.Distribution.at(item)
             break
     #
     return distribution
@@ -63,15 +100,7 @@ class PoolCandidateFinder(
         """Initialize."""
         self._registry = registry
         #
-        self._pool_distributions = []
-        #
-        pool_dir_path = registry.get_pool_dir_path()
-        if pool_dir_path and pool_dir_path.is_dir():
-            for item in pool_dir_path.iterdir():
-                if item.is_dir():
-                    distribution = _find_distribution(item)
-                    if distribution:
-                        self._pool_distributions.append(distribution)
+        self._pool_distributions = find_distributions(self._registry)
 
     def find_candidates(
             self,
