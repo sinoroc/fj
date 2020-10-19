@@ -140,17 +140,6 @@ def _add_pool_args_subparser(subparsers: SubParsers) -> None:
     #
     pool_list_parser = pool_subparsers.add_parser('list', allow_abbrev=False)
     pool_list_parser.set_defaults(_handler=_pool_list)
-    #
-    pool_remove_parser = pool_subparsers.add_parser(
-        'remove',
-        allow_abbrev=False,
-    )
-    pool_remove_parser.set_defaults(_handler=_pool_remove)
-    pool_remove_parser.add_argument(
-        'requirements',
-        metavar='requirement',
-        nargs='+',
-    )
 
 
 def _add_ve_args_subparser(subparsers: SubParsers) -> None:
@@ -260,11 +249,6 @@ def _pool_list(_args: argparse.Namespace) -> None:
     )
     for available_project in sorted_available_projects:
         output(str(available_project))
-
-
-def _pool_remove(args: argparse.Namespace) -> None:
-    raw_requirement_strs = args.requirements
-    _core.pool_remove(raw_requirement_strs)
 
 
 def _solve(args: argparse.Namespace) -> None:

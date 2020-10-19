@@ -109,13 +109,6 @@ def pool_list() -> typing.List[lib.base.Requirement]:
     return pooled_projects
 
 
-def pool_remove(requirements_strs: typing.Iterable[str]) -> None:
-    """Remove from pool."""
-    with lib.base.build_registry(_meta.PROJECT_NAME) as registry:
-        requirements = lib.parser.parse(registry, requirements_strs)
-        lib.pool.remove(registry, requirements)
-
-
 def solve(requirements_strs: typing.Iterable[str]) -> None:
     """Resolve requirements."""
     with lib.base.build_registry(_meta.PROJECT_NAME) as registry:
