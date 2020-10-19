@@ -88,20 +88,6 @@ class Registry:
         pool_dir_path = self._get_user_data_dir_path().joinpath('pool')
         return pool_dir_path
 
-    def get_requirement_dir_path(
-            self,
-            requirement: Requirement,
-    ) -> typing.Optional[pathlib.Path]:
-        """Get path to the directory containing the requirement."""
-        requirement_dir_path = None
-        version_str = get_pinned_requirement_version_str(requirement)
-        if version_str:
-            pool_dir_path = self.get_pool_dir_path()
-            requirement_dir_path = pool_dir_path.joinpath(
-                '{}-{}'.format(requirement.name, version_str),
-            )
-        return requirement_dir_path
-
     def get_temp_dir_path(self) -> pathlib.Path:
         """Get path to temporary directory."""
         return self._temp_dir_path

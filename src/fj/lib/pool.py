@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import importlib
 import logging
-import shutil
 import typing
 
 import packaging
@@ -187,17 +186,6 @@ def list_(
     pooled_projects = _get_pooled_projects(registry)
     LOGGER.info("list_ %s", pooled_projects)
     return pooled_projects
-
-
-def remove(
-        registry: base.Registry,
-        requirements: typing.Iterable[base.Requirement],
-) -> None:
-    """Remove requirements from pool."""
-    for requirement in requirements:
-        target_dir_path = registry.get_requirement_dir_path(requirement)
-        if target_dir_path and target_dir_path.is_dir():
-            shutil.rmtree(target_dir_path)
 
 
 # EOF
