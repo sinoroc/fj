@@ -365,7 +365,9 @@ class CandidateMaker(
     ) -> typing.Optional[Candidate]:
         """Make candidate for a requirement with a URI."""
         uri_str = requirement.url
-        candidate = cls.make_from_uri(registry, uri_str, extras, True)
+        candidate = None
+        if uri_str:
+            candidate = cls.make_from_uri(registry, uri_str, extras, True)
         return candidate
 
     @classmethod
@@ -507,8 +509,8 @@ def get_pinned_requirement_version_str(
     specifier_set = requirement.specifier
     if len(specifier_set) == 1:
         specifier = next(iter(specifier_set))
-        if specifier.operator == '==':  # type: ignore[attr-defined]
-            version = specifier.version  # type: ignore[attr-defined]
+        if specifier.operator == '==':
+            version = specifier.version
     #
     return version
 
