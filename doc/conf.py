@@ -3,6 +3,9 @@
 """Sphinx configuration."""
 
 import importlib.metadata
+import typing
+
+typing.TYPE_CHECKING = True  # Useful for type aliases
 
 _DISTRIBUTION_METADATA = importlib.metadata.metadata('fj')
 
@@ -58,7 +61,7 @@ extensions.append('sphinx.ext.autodoc')
 autodoc_default_options = {
     'members': True,
 }
-autodoc_typehints = 'none'  # pylint: disable=invalid-name
+autodoc_typehints = 'signature'  # pylint: disable=invalid-name
 
 # sphinx.ext.autosummary
 extensions.append('sphinx.ext.autosummary')
@@ -67,6 +70,7 @@ autosummary_generate = True  # pylint: disable=invalid-name
 # sphinx.ext.intersphinx
 extensions.append('sphinx.ext.intersphinx')
 intersphinx_mapping = {
+    'packaging': ('https://packaging.pypa.io/en/stable/', None),
     'python': ('https://docs.python.org/3/', None),
     'tox': ('https://tox.readthedocs.io/en/stable/', None),
     'virtualenv': ('https://virtualenv.pypa.io/en/stable/', None),
