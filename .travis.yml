@@ -10,7 +10,13 @@ os:
 
 python:
   - '3.8'
-  - '3.9-dev'
+  - '3.9'
+  - '3.10-dev'
+
+jobs:
+  allow_failures:
+    - python: '3.10-dev'
+  fast_finish: true
 
 install:
   - 'python3 -m pip install tox tox-travis'
@@ -26,14 +32,14 @@ deploy:
     file: 'dist/*'
     skip_cleanup: true
     on:
-      python: '3.8'
+      python: '3.9'
       tags: true
   - provider: 'pypi'
     distributions: 'sdist bdist_wheel'
     user: '${PYPI_USER}'
     password: '${PYPI_PASSWORD}'
     on:
-      python: '3.8'
+      python: '3.9'
       tags: true
 
 sudo: false
