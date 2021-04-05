@@ -63,7 +63,7 @@ def solve_for_pool(
         registry: base.Registry,
         requirements: typing.Iterable[base.Requirement],
         skip_depencencies: bool,
-) -> resolvelib.resolvers.Result:
+) -> typing.Optional[resolvelib.resolvers.Result]:
     """Solve dependency for the requirements."""
     finders = [
         _solver.pool.PoolCandidateFinder(registry),
@@ -77,7 +77,7 @@ def solve_for_environment(
         registry: base.Registry,
         requirements: typing.Iterable[base.Requirement],
         skip_depencencies: bool,
-) -> resolvelib.resolvers.Result:
+) -> typing.Optional[resolvelib.resolvers.Result]:
     """Solve dependency for the requirements."""
     finders = [
         _solver.direct.DirectCandidateFinder(registry, requirements),
@@ -92,7 +92,7 @@ def solve(
         registry: base.Registry,
         requirements: typing.Iterable[base.Requirement],
         skip_depencencies: bool,
-) -> resolvelib.resolvers.Result:
+) -> typing.Optional[resolvelib.resolvers.Result]:
     """Solve dependency for the requirements."""
     finders = [
         _solver.direct.DirectCandidateFinder(registry, requirements),

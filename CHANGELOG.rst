@@ -8,6 +8,7 @@
 
 * Rewrite the handling of the pool
   * Sort installations by wheel compatibility tags
+
 * Refactor, reorganize code, improve public API
 
 0.0.4

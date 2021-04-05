@@ -66,9 +66,12 @@ def _write_links(
         req_version_str = base.get_pinned_requirement_version_str(requirement)
         if req_version_str:
             req_version = packaging.version.Version(req_version_str)
+            requirement_key = (
+                packaging.utils.canonicalize_name(requirement.name)
+            )
             dir_path = pool.get_pooled_project_dir_path(
                 registry,
-                requirement.name,
+                requirement_key,
                 req_version,
             )
             link_strs.append(str(dir_path))
