@@ -8,4 +8,78 @@ requires = [
 ]
 
 
+[project]
+name = 'fj'
+
+dependencies = [
+]
+optional-dependencies.dev-all = [
+    'fj[dev-doc]',
+    'fj[dev-package]',
+    'fj[dev-test]',
+]
+optional-dependencies.dev-doc = [
+    'sphinx',
+    'sphinxcontrib-autoprogram',
+]
+optional-dependencies.dev-package = [
+    'build',
+    'twine',
+    'wheel',
+    'zapp',
+]
+optional-dependencies.dev-test = [
+    'mypy',
+    'pycodestyle',
+    'pydocstyle',
+    'pylint',
+    'pytest',
+    'pytest-mypy',
+    'pytest-pydocstyle',
+    'pytest-pycodestyle',
+    'pytest-pylint',
+    'pytest-yapf3',
+    'types-requests',
+    'yapf',
+]
+optional-dependencies.plugin-tox = [
+    'fj[full]',
+    'tox < 4',
+]
+optional-dependencies.plugin-virtualenv = [
+    'fj[full]',
+    'virtualenv',
+]
+optional-dependencies.full = [
+    'appdirs',
+    'mousebender < 2022.0.0',
+    'packaging',
+    'pep517',
+    'pip',
+    'requests',
+    'resolvelib == 0.4.0',
+]
+requires-python = '>= 3.8'
+
+entry-points.'tox'.fj = 'fj.ext._tox_plugin'  # [plugin-tox]
+entry-points.'virtualenv.seed'.fj = 'fj.ext._virtualenv_plugin:FjVirtualenvSeeder'  # [plugin-virtualenv]
+scripts.fj = 'fj._cli.main:main'
+
+authors = [
+    { email = 'sinoroc.code+python@gmail.com', name = 'sinoroc' },
+]
+
+description = 'Pool installations of Python projects'
+license.text = 'Apache-2.0'
+readme = 'README.rst'
+urls.Documentation = 'https://fj.readthedocs.io/'
+urls.GitHub = 'https://github.com/sinoroc/fj'
+urls.GitLab = 'https://gitlab.com/sinoroc/fj'
+urls.PyPI = 'https://pypi.org/project/fj/'
+
+dynamic = [
+    'version',
+]
+
+
 # EOF

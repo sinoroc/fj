@@ -22,7 +22,7 @@ except ModuleNotFoundError:
     pass
 
 if typing.TYPE_CHECKING:
-    SubParsers = argparse._SubParsersAction  # pylint: disable=protected-access
+    SubParsers = argparse._SubParsersAction[argparse.ArgumentParser]  # pylint: disable=protected-access
 
 LOGGER = logging.getLogger(__name__)
 

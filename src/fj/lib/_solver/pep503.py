@@ -31,7 +31,7 @@ class SimpleIndexFinder(
         self._registry = registry
         self._base_url = base_url if base_url else self.PYPI_BASE_URL
 
-    def find_candidates(  # pylint: disable=too-complex
+    def find_candidates(
             self,
             project_key: base.ProjectKey,
             requirements: typing.Iterable[base.Requirement],
@@ -45,7 +45,7 @@ class SimpleIndexFinder(
         #
         candidates: typing.Dict[base.Version, Release] = {}
         #
-        project_url = '{}{}'.format(self._base_url, project_key)
+        project_url = f'{self._base_url}{project_key}'
         project_page = requests.get(project_url).content.decode()
         #
         links = mousebender.simple.parse_archive_links(project_page)
@@ -72,13 +72,10 @@ class SimpleIndexFinder(
                         release['unbuilt'].append(candidate)
         #
         if candidates:
-            for version in candidates:
-                release = candidates[version]
-                for candidate in release['built']:
-                    yield candidate
+            for release in candidates.values():
+                yield from release['built']
                 if not release['built']:
-                    for candidate in release['unbuilt']:
-                        yield candidate
+                    yield from release['unbuilt']
 
     def _make_candidate_from_link(
             self,
@@ -126,7 +123,7 @@ class SimpleIndexFinder(
         env_python_version = self._registry.environment.python_version
         link_python_specifier = distribution_link.requires_python
         #
-        is_incompatible = (env_python_version not in link_python_specifier)
+        is_incompatible = env_python_version not in link_python_specifier
         #
         return is_incompatible
 

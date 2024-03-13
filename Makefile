@@ -5,16 +5,16 @@ source_dir := ./src
 tests_dir := ./test
 
 
-.DEFAULT_GOAL := refresh
+.DEFAULT_GOAL := editable
+
+
+.PHONY: editable
+editable:
+	python3 -m pip install --editable '.[dev-all,full,plugin-tox,plugin-virtualenv]'
 
 
 .PHONY: refresh
-refresh: clean develop review doc package
-
-
-.PHONY: develop
-develop:
-	python3 setup.py develop
+refresh: clean editable review doc package
 
 
 .PHONY: package
@@ -23,13 +23,13 @@ package: sdist wheel zapp
 
 .PHONY: sdist
 sdist:
-	python3 setup.py sdist
+	python3 -m build --sdist
 	python3 -m twine check dist/*.tar.gz
 
 
 .PHONY: wheel
 wheel:
-	python3 setup.py bdist_wheel
+	python3 -m build --wheel
 	python3 -m twine check dist/*.whl
 
 
@@ -55,7 +55,7 @@ check:
 
 .PHONY: lint
 lint:
-	python3 -m pytest --mypy --pycodestyle --pydocstyle --pylint -m 'mypy or pycodestyle or pydocstyle or pylint'
+	python3 -m pytest --pycodestyle --pydocstyle --pylint --yapf -m 'pycodestyle or pydocstyle or pylint or yapf'
 
 
 .PHONY: mypy
@@ -94,12 +94,13 @@ pytest:
 
 .PHONY: review
 review: check
-	python3 -m pytest --mypy --pycodestyle --pydocstyle --pylint
+	python3 -m pytest --mypy --pycodestyle --pydocstyle --pylint --yapf
 
 
 .PHONY: clean
 clean:
 	$(RM) --recursive ./.eggs/
+	$(RM) --recursive ./.mypy_cache/
 	$(RM) --recursive ./.pytest_cache/
 	$(RM) --recursive ./build/
 	$(RM) --recursive ./dist/

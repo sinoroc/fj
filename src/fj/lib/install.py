@@ -53,7 +53,7 @@ def _install_candidates(  # pylint: disable=too-complex
         if candidate_path:
             installers.install_path(registry, candidate_path)
         else:
-            CanNotInstallWithoutPath(candidate)
+            raise CanNotInstallWithoutPath(candidate)
     #
     for candidate in editable_candidates:
         candidate_path = getattr(candidate, 'source_path', None)
@@ -64,7 +64,7 @@ def _install_candidates(  # pylint: disable=too-complex
                 editable=True,
             )
         else:
-            CanNotInstallWithoutPath(candidate)
+            raise CanNotInstallWithoutPath(candidate)
 
 
 class CanNotInstallIndirectRequirementAsEditable(Exception):

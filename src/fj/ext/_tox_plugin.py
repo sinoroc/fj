@@ -26,7 +26,7 @@ def tox_addoption(parser: tox.config.Parser) -> None:
 def tox_configure(config: tox.config.Config) -> None:
     """Set hook."""
     #
-    is_fj_installer_enabled = (config.option.fj is True)
+    is_fj_installer_enabled = config.option.fj is True
     #
     if is_fj_installer_enabled:
         #

@@ -108,7 +108,7 @@ def get_metadata(wheel_path: pathlib.Path) -> typing.Optional[base.Metadata]:
             if file_name.endswith('.dist-info/METADATA'):
                 email_parser = email.parser.BytesParser()
                 metadata = email_parser.parse(
-                    zip_file.open(file_name),  # type: ignore[arg-type]
+                    zip_file.open(file_name),
                     headersonly=True,
                 )
                 break
@@ -150,12 +150,12 @@ class Pep517WheelBuilder(
                 )
             except Exception as exc:
                 raise CanNotBuildWheel(source_dir_path) from exc
+            #
+            maybe_wheel_path = target_dir_path.joinpath(wheel_file_name)
+            if maybe_wheel_path.is_file():
+                wheel_path = maybe_wheel_path
             else:
-                maybe_wheel_path = target_dir_path.joinpath(wheel_file_name)
-                if maybe_wheel_path.is_file():
-                    wheel_path = maybe_wheel_path
-                else:
-                    raise CanNotFindBuiltWheel(wheel_path)
+                raise CanNotFindBuiltWheel(wheel_path)
         #
         return wheel_path
 

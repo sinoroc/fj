@@ -53,7 +53,7 @@ def _build_zipapp(
             #
             install_dir_path = temp_dir_path.joinpath('zipapp')
             LOGGER.info("Installing zipapp requirements...")
-            python_exe = venv_context.env_exe  # pylint: disable=no-member
+            python_exe = venv_context.env_exe
             _do_pip_install(
                 pathlib.Path(python_exe),
                 install_dir_path,

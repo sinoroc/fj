@@ -236,7 +236,7 @@ class FjVirtualenvSeeder(
     @classmethod
     def add_parser_arguments(
             cls,
-            parser: argparse._ArgumentGroup,  # pylint:disable=protected-access
+            parser: argparse._ArgumentGroup,
             interpreter: virtualenv.discovery.py_info.PythonInfo,
             app_data: virtualenv.app_data.base.AppData,
     ) -> None:

@@ -70,7 +70,7 @@ class SdistCandidate(
             source_dir_path: pathlib.Path,
     ) -> pathlib.Path:
         #
-        is_cache_possible = (not self.is_direct)
+        is_cache_possible = not self.is_direct
         #
         if is_cache_possible:
             target_dir_path = (
